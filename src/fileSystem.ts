@@ -1,3 +1,5 @@
+import {DirectoryNode, FileNode} from "./types/odTree";
+
 export type File = {
     name: string,
     size: number,
@@ -19,6 +21,40 @@ export type Directory = {
 };
 
 export type CompressedPaths = Map<string, File>;
+
+export function fromOdTree(tree: DirectoryNode): Directory {
+    const root: Directory = {
+        name: 'root',
+        files: {},
+        subdirectories: {},
+        indexes: [],
+        symbol: Symbol('root'),
+    };
+
+    // files
+    for (const file of tree.children.filter(node => node.type === 'file')) {
+        const index = Symbol(file.name);
+        root.files[index] = {
+            name: file.name,
+            size: file.size?? 0,
+            downloadUrl: [(file as FileNode).downloadUrl],
+            symbol: index,
+        };
+        root.indexes.push(index);
+    }
+    // recursively build directories
+    const directories = [];
+    for (const dir of tree.children.filter(node => node.type === 'directory')) {
+        directories.push(fromOdTree(dir as DirectoryNode));
+    }
+    for (const dir of directories) {
+        const index = Symbol(dir.name);
+        root.subdirectories[index] = dir;
+        root.indexes.push(index);
+    }
+
+    return root;
+}
 
 export function cd(path: symbol[], root: Directory): Directory {
     let current = root;

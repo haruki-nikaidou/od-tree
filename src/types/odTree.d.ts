@@ -23,3 +23,9 @@ export type DriveToken = {
 }
 
 export type FileTree = DirectoryNode;
+
+export type OnedriveAccount = {
+    clientId: string,
+    clientSecret: string,
+    tenantId: string
+}
