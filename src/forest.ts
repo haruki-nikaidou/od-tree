@@ -1,11 +1,26 @@
-import {addFile, back, cd, combineDirectory, cp, Directory, File, fromOdTree, mkdir, rename, rm} from "./fileSystem";
+import {
+    addFile,
+    back,
+    cd,
+    combineDirectory,
+    CompressedPaths, compressPath,
+    cp,
+    Directory,
+    File,
+    fromOdTree,
+    mkdir,
+    rename,
+    rm
+} from "./fileSystem";
 import {DirectoryNode} from "./types/odTree";
 
 export class OnedriveTreeFs {
     root: Directory;
+    index: CompressedPaths;
 
     constructor(tree: DirectoryNode) {
         this.root = fromOdTree(tree);
+        this.index = compressPath(this.root);
     }
 
     cd(path: symbol[]) {
@@ -39,6 +54,14 @@ export class OnedriveTreeFs {
 
     rename(path: symbol[], newName: string) {
         rename(path, this.root, newName);
+    }
+
+    updateIndex() {
+        this.index = compressPath(this.root);
+    }
+
+    query(path: string) {
+        return this.index.get(path);
     }
 
     static combine(fs1: OnedriveTreeFs, fs2: OnedriveTreeFs): OnedriveTreeFs {
