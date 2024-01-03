@@ -106,6 +106,18 @@ export function mount(parent_root: Directory, child_root: Directory, dirPath: sy
     parent.indexes.push(index);
 }
 
+export function rename(path: symbol[], root: Directory, newName: string): void {
+    let dirOrFile = root;
+    for (let i = 0; i < path.length - 1; i++) {
+        dirOrFile = dirOrFile.subdirectories[path[i]];
+    }
+    let target: Directory | File = dirOrFile.subdirectories[path[path.length - 1]];
+    if (!target) {
+        target = dirOrFile.files[path[path.length - 1]];
+    }
+    target.name = newName;
+}
+
 export function combineFile(a: File, b: File): File {
     return {
         name: a.name,
@@ -198,4 +210,47 @@ export function combineDirectory(a: Directory, b: Directory): Directory {
 
 function intersection(setA: Set<string>, setB: Set<string>): Set<string> {
     return new Set([...setA].filter(x => setB.has(x)));
+}
+
+function pathToString(path: symbol[], root: Directory): string {
+    let current = root;
+    let pathString = '/';
+    for (const dir of path) {
+        pathString += encodeURIComponent(current.subdirectories[dir].name) + '/';
+        current = current.subdirectories[dir];
+    }
+    return pathString;
+}
+
+export function compressPath(root: Directory): CompressedPaths {
+    const compressedPaths = new Map<string, File>();
+    const pathStack: symbol[] = [];
+
+    // files
+    const fileSymbols = Object.getOwnPropertySymbols(root.files);
+    for (const symbol of fileSymbols) {
+        const file = root.files[symbol];
+        const path = pathToString(pathStack, root);
+        compressedPaths.set(path + encodeURIComponent(file.name), file);
+    }
+
+    // recursively compress directories
+    function compressDirectory(dir: Directory): void {
+        const dirSymbols = Object.getOwnPropertySymbols(dir.subdirectories);
+        for (const symbol of dirSymbols) {
+            const subDir = dir.subdirectories[symbol];
+            pathStack.push(symbol);
+            compressDirectory(subDir);
+            pathStack.pop();
+        }
+        const fileSymbols = Object.getOwnPropertySymbols(dir.files);
+        for (const symbol of fileSymbols) {
+            const file = dir.files[symbol];
+            const path = pathToString(pathStack, root);
+            compressedPaths.set(path + encodeURIComponent(file.name), file);
+        }
+    }
+    compressDirectory(root);
+
+    return compressedPaths;
 }
