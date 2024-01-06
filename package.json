@@ -1,6 +1,6 @@
 {
   "name": "onedrive-tree",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "description": "List all files in onedrive as a file tree.",
   "main": "dist/index.js",
   "scripts": {
