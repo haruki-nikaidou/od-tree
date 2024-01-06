@@ -1,6 +1,6 @@
 {
   "name": "onedrive-tree",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "List all files in onedrive as a file tree.",
   "main": "dist/index.js",
   "scripts": {
@@ -11,6 +11,7 @@
     "tree"
   ],
   "author": "Nikaidou Haruki <meteo.haru@gmail.com>",
+  "repository": "https://github.com/haruki-nikaidou/od-tree",
   "license": "MIT",
   "devDependencies": {
     "typescript": "^5.3.3"
