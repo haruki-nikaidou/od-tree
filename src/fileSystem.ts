@@ -1,4 +1,4 @@
-import {DirectoryNode, FileNode} from "./types/odTree";
+import {DirectoryNode, FileNode} from "./index";
 
 export type File = {
     name: string,

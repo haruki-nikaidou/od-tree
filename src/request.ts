@@ -1,5 +1,5 @@
 import axios from "axios";
-import {DriveToken, FileNode, FileNodeType} from "./types/odTree";
+import {Drive, FileNode, FileNodeType} from "./index";
 
 export type FileResponse = {
     name: string,
@@ -59,7 +59,7 @@ function cleanListResponse(listResponse: ListResponse): (FileResponse | Director
     })
 }
 
-export async function requestList(directoryId: string, token: DriveToken): Promise<(FileResponse | DirectoryResponse)[]> {
+export async function requestList(directoryId: string, token: Drive): Promise<(FileResponse | DirectoryResponse)[]> {
     const url = requestListUrl(directoryId, token.driveId);
     const res = await axios.get(url, {
         headers: {

@@ -1,35 +1,39 @@
-import {getAccessToken, getOneDriveDriveId} from "./auth";
-import OnedriveForestFs, { OnedriveTreeFs } from "./forest";
-import {buildTree} from "./recursive";
-import {recursiveBuildDirectory} from "./recursive";
-import type {FileNodeType, FileNode, FileTree,DirectoryNode, DriveToken,OnedriveAccount} from "./types/odTree";
 import * as fileSystem from './fileSystem'
+import * as auth from './auth';
+import * as request from './request';
+import * as recursive from './recursive';
+import * as forest from './forest';
 
-export default async function OdTree(clientId: string, clientSecret: string, tenantId: string): Promise<FileTree> {
-    const accessToken = await getAccessToken(clientId, clientSecret, tenantId);
-    const driveId = await getOneDriveDriveId(accessToken);
-    return buildTree({
-        accessToken,
-        driveId,
-    })
+export enum FileNodeType {
+    File = 'file',
+    Directory = 'directory'
 }
 
-const auth = {
-    getAccessToken, getOneDriveDriveId
+export type FileNode = {
+    name: string,
+    size: number,
+    downloadUrl: string,
+    type: FileNodeType.File,
 }
 
-const recursiveBuild = {
-    buildTree, recursiveBuildDirectory
+export type DirectoryNode = {
+    name: string,
+    type: FileNodeType.Directory,
+    size?: number,
+    children: (FileNode | DirectoryNode)[]
 }
 
-const forest = {
-    OnedriveForestFs,
-    OnedriveTreeFs,
-    fileSystem
+export type Drive = {
+    driveId: string,
+    accessToken: string,
+}
+
+export type FileTree = DirectoryNode;
+
+export function OnedriveTree(drive: Drive): Promise<FileTree> {
+    return recursive.buildTree(drive);
 }
 
 export {
-    auth, recursiveBuild, forest,
-    FileNodeType, FileNode, DirectoryNode, DriveToken, FileTree,
-    OnedriveAccount
+    fileSystem, auth, request, recursive, forest
 }

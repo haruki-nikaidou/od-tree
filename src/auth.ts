@@ -1,25 +1,29 @@
 import axios from "axios";
 
-export async function getAccessToken(clientId: string, clientSecret: string, tenantId: string): Promise<string> {
-    const url = `https://login.microsoftonline.com/${tenantId}/oauth2/v2.0/token`;
-    const params = new URLSearchParams();
-    params.append('client_id', clientId);
-    params.append('scope', 'https://graph.microsoft.com/.default');
-    params.append('client_secret', clientSecret);
-    params.append('grant_type', 'client_credentials');
+export type OauthEssentials = {
+    refreshToken: string,
+    clientId: string,
+    clientSecret: string,
+}
 
-    try {
-        const response = await axios.post(url, params, {
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded'
-            }
-        });
+const authBaseUrl = "https://login.microsoftonline.com/common/oauth2/v2.0"
 
-        return response.data["access_token"];
-    } catch (error) {
-        console.error('Error obtaining access token from Microsoft Graph API:', error);
-        throw error;
+export async function fetchAccessToken(essential: OauthEssentials): Promise<string> {
+    const {refreshToken, clientId, clientSecret } = essential;
+    const oauthUrl = authBaseUrl + '/token';
+    const requestBody = {
+        client_id: clientId,
+        client_secret: clientSecret,
+        grant_type: 'refresh_token',
+        requested_token_use: 'on_behalf_of',
+        refresh_token: refreshToken,
     }
+    const response = await axios.post(oauthUrl, requestBody,{
+        headers: {
+            'Content-Type': 'multipart/form-data'
+        }
+    });
+    return response.data["access_token"];
 }
 
 export async function getOneDriveDriveId(accessToken: string): Promise<string> {

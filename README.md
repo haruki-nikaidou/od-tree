@@ -18,13 +18,11 @@ If you have got the `token`, you can use
 import {buildTree} from "onedrive-tree";
 await buildTree(token)
 ```
-The `token` is `DriveToken` type, which is defined in `src/types/odTree.d.ts`.
 
 ## API
 
 ### Data Structure
 
-refer to `src/types/odTree.d.ts`
 
 ```ts
 export type FileNode = {

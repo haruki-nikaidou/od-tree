@@ -12,7 +12,7 @@ import {
     rename,
     rm
 } from "./fileSystem";
-import {DirectoryNode} from "./types/odTree";
+import {DirectoryNode} from "./index";
 
 export class OnedriveTreeFs {
     root: Directory;
