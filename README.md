@@ -5,18 +5,16 @@ List all files in onedrive as a file tree.
 
 ### Easiest way: `OdTree`
 
-The `clientId`, `clientSecret` and `tenantId` can be found in the Azure Active Directory page of your onedrive account.
-
 ```ts
 import OdTree from "onedrive-tree";
-await OdTree(clientId, clientSecret, tenantId);
+await OdTree({clientId, clientSecret, refreshToken});
 ```
 
-If you have got the `token`, you can use 
+If you have got the `accessToken`, you can use 
 
 ```ts
 import {buildTree} from "onedrive-tree";
-await buildTree(token)
+await buildTree(accessToken)
 ```
 
 ## API
